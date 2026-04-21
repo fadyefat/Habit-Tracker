@@ -1,0 +1,57 @@
+
+> habit-tracker@0.0.0 build
+> tsc -b && vite build
+
+[36mvite v8.0.9 [32mbuilding client environment for production...[36m[39m
+[2K
+node.exe : Error: Cannot apply unknown utility class `text-gray-800`. Are you using CSS modules or similar and missing 
+`@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+At D:\Node.js\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Error: Cannot a...rence-directive:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    at onInvalidCandidate (D:\websites\habit-tracker\node_modules\tailwindcss\dist\lib.js:21:1314)
+    at Ne (D:\websites\habit-tracker\node_modules\tailwindcss\dist\lib.js:16:38252)
+    at D:\websites\habit-tracker\node_modules\tailwindcss\dist\lib.js:21:355
+    at Ur (D:\websites\habit-tracker\node_modules\tailwindcss\dist\lib.js:3:1733)
+    at I (D:\websites\habit-tracker\node_modules\tailwindcss\dist\lib.js:3:1377)
+    at Ee (D:\websites\habit-tracker\node_modules\tailwindcss\dist\lib.js:21:172)
+    at vn (D:\websites\habit-tracker\node_modules\tailwindcss\dist\lib.js:38:294)
+    at async kn (D:\websites\habit-tracker\node_modules\tailwindcss\dist\lib.js:38:631)
+    at async Xr (D:\websites\habit-tracker\node_modules\@tailwindcss\node\dist\index.js:10:3415)
+    at async E (D:\websites\habit-tracker\node_modules\@tailwindcss\postcss\dist\index.js:10:3979)
+transforming...? 2692 modules transformed.
+[31m?[39m Build failed in 985ms
+[31merror during build:
+[31mBuild failed with 1 error:
+
+[plugin vite:css] D:/websites/habit-tracker/src/index.css:1:0
+CssSyntaxError: [postcss] tailwindcss: D:/websites/habit-tracker/src/index.css:1:1: Cannot apply unknown utility class 
+`text-gray-800`. Are you using CSS modules or similar and missing `@reference`? 
+https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at Input.error (D:\websites\habit-tracker\node_modules\postcss\lib\input.js:135:16)
+    at Root.error (D:\websites\habit-tracker\node_modules\postcss\lib\node.js:146:32)
+    at Object.Once (D:\websites\habit-tracker\node_modules\@tailwindcss\postcss\dist\index.js:10:6913)
+    at async LazyResult.runAsync (D:\websites\habit-tracker\node_modules\postcss\lib\lazy-result.js:293:11)
+    at async runPostCSS (file:///D:/websites/habit-tracker/node_modules/vite/dist/node/chunks/node.js:21024:19)
+    at async compilePostCSS (file:///D:/websites/habit-tracker/node_modules/vite/dist/node/chunks/node.js:21008:6)
+    at async compileCSS (file:///D:/websites/habit-tracker/node_modules/vite/dist/node/chunks/node.js:20938:26)
+    at async TransformPluginContextImpl.handler 
+(file:///D:/websites/habit-tracker/node_modules/vite/dist/node/chunks/node.js:20451:47)
+    at async plugin 
+(file:///D:/websites/habit-tracker/node_modules/rolldown/dist/shared/bindingify-input-options-aPVaxNxQ.mjs:1172:16)
+    at async plugin.<computed> (file:///D:/websites/habit-tracker/node_modules/rolldown/dist/shared/bindingify-input-op
+tions-aPVaxNxQ.mjs:1612:12)[31m
+    at aggregateBindingErrorsIntoJsError 
+(file:///D:/websites/habit-tracker/node_modules/rolldown/dist/shared/error-DAA7ncC5.mjs:48:18)
+    at unwrapBindingResult 
+(file:///D:/websites/habit-tracker/node_modules/rolldown/dist/shared/error-DAA7ncC5.mjs:18:128)
+    at #build (file:///D:/websites/habit-tracker/node_modules/rolldown/dist/shared/rolldown-build-BPKCFYpX.mjs:3317:34)
+    at async buildEnvironment (file:///D:/websites/habit-tracker/node_modules/vite/dist/node/chunks/node.js:32999:64)
+    at async Object.build (file:///D:/websites/habit-tracker/node_modules/vite/dist/node/chunks/node.js:33421:19)
+    at async Object.buildApp (file:///D:/websites/habit-tracker/node_modules/vite/dist/node/chunks/node.js:33418:153)
+    at async CAC.<anonymous> (file:///D:/websites/habit-tracker/node_modules/vite/dist/node/cli.js:778:3) {
+  errors: [Getter/Setter]
+}[39m
