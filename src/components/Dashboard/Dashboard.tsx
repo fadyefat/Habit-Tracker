@@ -1,7 +1,7 @@
 import { useHabits } from '../../hooks/useHabits';
 import { getTodayString } from '../../utils/dateHelpers';
 import { motion } from 'framer-motion';
-import { Check, Bell, Sun, Moon, Trash2 } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import { useNotifications } from '../UI/NotificationProvider';
 import { useMascot } from '../../hooks/useMascot';
 import { getMascotAsset } from '../Mascot/mascotAssets';
@@ -13,11 +13,7 @@ export const Dashboard = ({ onSelectHabit }: { onSelectHabit: (id: string) => vo
   const mascot = useMascot();
   const { notify } = useNotifications();
   const today = getTodayString();
-  const { setTheme, isDark } = useTheme();
-
-  const toggleTheme = () => {
-    setTheme(isDark ? 'light' : 'dark');
-  };
+  const { isDark } = useTheme();
 
   const activeHabits = habits.filter(h => h.isActive);
   const completedTodayCount = logs.filter(

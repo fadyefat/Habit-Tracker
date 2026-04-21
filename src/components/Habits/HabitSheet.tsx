@@ -12,7 +12,7 @@ export const HabitSheet = ({ onSelectHabit }: { onSelectHabit: (id: string) => v
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   // Generate past 14 days
-  const days = [];
+  const days: Date[] = [];
   for (let i = 13; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
