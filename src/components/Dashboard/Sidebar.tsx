@@ -1,8 +1,9 @@
-import { LayoutGrid, CalendarDays, Sun, Moon } from 'lucide-react';
+import { LayoutGrid, CalendarDays, Sun, Moon, ImagePlus, RefreshCcw } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeProvider';
 import { useMascot } from '../../hooks/useMascot';
 import { getMascotAsset } from '../Mascot/mascotAssets';
+import { useNotifications } from '../UI/NotificationProvider';
 
 export const Sidebar = () => {
   const location = useLocation();
@@ -12,6 +13,28 @@ export const Sidebar = () => {
   const mascot = useMascot();
 
   const toggleTheme = () => setTheme(isDark ? 'light' : 'dark');
+  const { notify } = useNotifications();
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, mode: 'light' | 'dark') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      localStorage.setItem(`custom_mascot_${mode}`, base64String);
+      notify('Mascot Updated', `New ${mode} mode mascot set!`, base64String);
+      setTimeout(() => window.location.reload(), 1500);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const resetMascots = () => {
+    localStorage.removeItem('custom_mascot_light');
+    localStorage.removeItem('custom_mascot_dark');
+    notify('Mascots Reset', 'Restored default mascot images');
+    setTimeout(() => window.location.reload(), 1500);
+  };
 
   const btnClass = "w-11 h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center transition-all duration-300 relative group";
   const inactiveClass = "text-gray-400 hover:text-indigo-500 hover:bg-white/60 dark:hover:bg-white/10";
@@ -37,6 +60,22 @@ export const Sidebar = () => {
             <CalendarDays size={22} strokeWidth={isTracker ? 2.5 : 2} />
           </button>
         </Link>
+
+        {/* Mascot Customization */}
+        <div className="flex flex-col gap-3 mt-6 items-center">
+          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Mascot</div>
+          <label className={`${btnClass} ${inactiveClass} cursor-pointer`} title="Upload Light Mascot">
+            <ImagePlus size={20} className="text-amber-500" />
+            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'light')} />
+          </label>
+          <label className={`${btnClass} ${inactiveClass} cursor-pointer`} title="Upload Dark Mascot">
+            <ImagePlus size={20} className="text-indigo-400" />
+            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'dark')} />
+          </label>
+          <button onClick={resetMascots} className={`${btnClass} ${inactiveClass}`} title="Reset to Defaults">
+            <RefreshCcw size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Toggles & Avatar */}

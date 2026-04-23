@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeProvider';
 import { NotificationProvider } from './components/UI/NotificationProvider';
 import { MascotLayer } from './components/Mascot/MascotLayer';
@@ -19,7 +19,7 @@ function App() {
   return (
     <ThemeProvider>
       <NotificationProvider>
-        <BrowserRouter>
+        <HashRouter>
           <div className="min-h-screen relative overflow-hidden font-sans flex text-gray-800 dark:text-gray-100 transition-colors duration-500">
             <MascotLayer />
             
@@ -42,7 +42,7 @@ function App() {
             {isAddModalOpen && <AddHabitModal onClose={() => setIsAddModalOpen(false)} />}
             {selectedHabitId && <HabitDetailModal habitId={selectedHabitId} onClose={() => setSelectedHabitId(null)} />}
           </div>
-        </BrowserRouter>
+        </HashRouter>
       </NotificationProvider>
     </ThemeProvider>
   )
