@@ -6,7 +6,7 @@ export const useHabits = () => {
   const [habits, setHabits] = useLocalStorage<Habit[]>('habit-tracker-habits', []);
   const [logs, setLogs] = useLocalStorage<DailyLog[]>('habit-tracker-logs', []);
 
-  const addHabit = (title: string, category: string, targetDaysPerWeek: number = 7, restFrequency: number = 0) => {
+  const addHabit = (title: string, category: string, targetDaysPerWeek: number = 7, workPeriod: number = 0, restPeriod: number = 0) => {
     const newHabit: Habit = {
       id: crypto.randomUUID(),
       title,
@@ -16,7 +16,8 @@ export const useHabits = () => {
       longestStreak: 0,
       isActive: true,
       targetDaysPerWeek,
-      restFrequency,
+      workPeriod,
+      restPeriod,
     };
     setHabits((prev) => [...prev, newHabit]);
   };
@@ -30,72 +31,55 @@ export const useHabits = () => {
     setHabits((prev) => prev.map((h) => (h.id === id ? { ...h, ...updates } : h)));
   };
 
-  const calculateStreaks = (habitId: string, currentLogs: DailyLog[], restFrequency: number = 0) => {
     const habitLogs = currentLogs
-      .filter((log) => log.habitId === habitId && log.completed)
+      .filter((log) => log.habitId === habit.id && log.completed)
       .map((log) => log.date)
       .sort((a, b) => new Date(a).getTime() - new Date(b).getTime()); // Oldest first
 
-    if (habitLogs.length === 0) return { currentStreak: 0, longestStreak: 0 };
-
-    let longest = 1;
-    let current = 1;
-    let consecutiveDays = 1;
+    const firstLogDateStr = habitLogs.length > 0 ? habitLogs[0] : formatDateString(new Date(habit.createdAt));
+    const startDateStr = firstLogDateStr;
     
-    for (let i = 0; i < habitLogs.length - 1; i++) {
-        const diff = differenceInDays(habitLogs[i + 1], habitLogs[i]);
-        if (diff === 1) {
-            current++;
-            consecutiveDays++;
-        } else if (diff === 2 && restFrequency > 0 && consecutiveDays >= restFrequency) {
-            current += 2; // Count the skipped day + the current day
-            consecutiveDays = 1; // Reset work count for next rest day
-        } else {
-            current = 1;
-            consecutiveDays = 1;
-        }
-        if (current > longest) longest = current;
-    }
-
-    // Current Streak logic
     let currentStreak = 0;
-    const today = getTodayString();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterStr = formatDateString(yesterday);
+    let longestStreak = 0;
     
-    const lastLogDate = habitLogs[habitLogs.length - 1];
-    
-    // Check if the streak is still active today or yesterday
-    // Or if today is a rest day (last log was yesterday or day before, and we have enough consecutive days)
-    // Actually, it's easier to just use the 'current' from the loop IF the last log is recent enough.
-    
-    const dayBeforeYesterday = new Date();
-    dayBeforeYesterday.setDate(dayBeforeYesterday.getDate() - 2);
-    const dayBeforeYesterStr = formatDateString(dayBeforeYesterday);
+    // Iterate from start date to today
+    const curr = parseDateString(startDateStr);
+    const todayDate = new Date();
+    todayDate.setHours(23, 59, 59, 999); // End of today
 
-    let isRecent = lastLogDate === today || lastLogDate === yesterStr;
-    
-    // If last log was day before yesterday, it's only active if we "earned" a rest day yesterday
-    if (!isRecent && lastLogDate === dayBeforeYesterStr && restFrequency > 0) {
-        // We need to know how many consecutive days we had BEFORE the last log
-        // This is getting complex, let's simplify: 
-        // If the forward loop finished and the last log is recent, current is our streak.
-        isRecent = true; 
+    while (curr <= todayDate) {
+      const dateStr = formatDateString(curr);
+      const isComplete = currentLogs.some(l => l.habitId === habit.id && l.date === dateStr && l.completed);
+      
+      const isRest = habit.workPeriod && habit.restPeriod ? 
+        ((differenceInDays(dateStr, startDateStr) % (habit.workPeriod + habit.restPeriod)) >= habit.workPeriod) : 
+        false;
+
+      if (isRest) {
+        // Rest day - streak continues (don't reset), but don't increment it
+        // Unless you want it to count as a day of streak. 
+        // User seems to expect 6 in his example, which means rest day isn't counted.
+      } else {
+        // Work day
+        if (isComplete) {
+          currentStreak++;
+        } else {
+          // If it's today and not yet complete, don't break the streak yet, but don't increment
+          if (dateStr === today) {
+            // Keep streak from yesterday
+          } else {
+            currentStreak = 0;
+          }
+        }
+      }
+
+      if (currentStreak > longestStreak) longestStreak = currentStreak;
+      
+      // Next day
+      curr.setDate(curr.getDate() + 1);
     }
 
-    // Final check for current streak
-    if (lastLogDate === today || lastLogDate === yesterStr) {
-        currentStreak = current;
-    } else if (restFrequency > 0 && lastLogDate === dayBeforeYesterStr) {
-        // Special case: Today is the first day back after an earned rest day (yesterday)
-        // But if we haven't logged today yet, the streak is still technically active?
-        // Let's say if you did Mon, Tue, Wed, then Thu was rest, Fri (today) you haven't done it yet.
-        // Your streak is still 4.
-        currentStreak = current;
-    }
-
-    return { currentStreak, longestStreak: longest };
+    return { currentStreak, longestStreak };
   };
 
   const toggleHabitComplete = (habitId: string, date: string) => {
@@ -123,7 +107,8 @@ export const useHabits = () => {
 
       // Automatically recalculate streaks for this habit
       const habit = habits.find(h => h.id === habitId);
-      const { currentStreak, longestStreak } = calculateStreaks(habitId, newLogs, habit?.restFrequency);
+      if (!habit) return newLogs;
+      const { currentStreak, longestStreak } = calculateStreaks(habit, newLogs);
       
       setHabits((prevHabits) => 
         prevHabits.map((h) => {

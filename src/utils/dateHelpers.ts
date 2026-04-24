@@ -45,3 +45,14 @@ export const isYesterday = (dateStr: string): boolean => {
   yesterday.setDate(yesterday.getDate() - 1);
   return dateStr === formatDateString(yesterday);
 };
+
+/**
+ * Checks if a date is a rest day based on work/rest periods.
+ */
+export const isRestDay = (workPeriod: number, restPeriod: number, startDateStr: string, targetDateStr: string): boolean => {
+  if (!workPeriod || !restPeriod) return false;
+  const diff = differenceInDays(targetDateStr, startDateStr);
+  const cycleLength = workPeriod + restPeriod;
+  const position = diff % cycleLength;
+  return position >= workPeriod;
+};

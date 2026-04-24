@@ -7,7 +7,8 @@ export interface Habit {
   longestStreak: number;
   isActive: boolean;
   targetDaysPerWeek: number;
-  restFrequency?: number; // 0 = no rest days, >0 = 1 rest day allowed after X days
+  workPeriod?: number; // Days to work
+  restPeriod?: number; // Days to rest
 }
 
 export interface DailyLog {

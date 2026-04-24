@@ -1,5 +1,5 @@
 import { useHabits } from '../../hooks/useHabits';
-import { getTodayString } from '../../utils/dateHelpers';
+import { getTodayString, isRestDay, formatDateString } from '../../utils/dateHelpers';
 import { motion } from 'framer-motion';
 import { Check, Trash2 } from 'lucide-react';
 import { useNotifications } from '../UI/NotificationProvider';
@@ -15,7 +15,19 @@ export const Dashboard = ({ onSelectHabit }: { onSelectHabit: (id: string) => vo
   const today = getTodayString();
   const { isDark } = useTheme();
 
-  const activeHabits = habits.filter(h => h.isActive);
+  const activeHabits = habits.filter(h => {
+    if (!h.isActive) return false;
+    // Hide if it's a rest day
+    const habitLogs = logs.filter(l => l.habitId === h.id && l.completed).sort((a, b) => a.date.localeCompare(b.date));
+    const startDateStr = habitLogs.length > 0 ? habitLogs[0].date : formatDateString(new Date(h.createdAt));
+    
+    if (isRestDay(h.workPeriod || 0, h.restPeriod || 0, startDateStr, today)) {
+       // If it's already completed today, show it.
+       const isDone = logs.some(l => l.habitId === h.id && l.date === today && l.completed);
+       return isDone; 
+    }
+    return true;
+  });
   const completedTodayCount = logs.filter(
     l => l.date === today && l.completed && activeHabits.some(h => h.id === l.habitId)
   ).length;

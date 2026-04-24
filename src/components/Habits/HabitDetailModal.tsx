@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useHabits } from '../../hooks/useHabits';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Flame, Target, Activity, Trash2, Save, Plus } from 'lucide-react';
+import { X, Flame, Target, Activity, Trash2, Save } from 'lucide-react';
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const TrophyIcon = () => (
@@ -18,7 +18,8 @@ export const HabitDetailModal = ({ habitId, onClose }: { habitId: string, onClos
   const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'yearly'>('weekly');
   const [editTitle, setEditTitle] = useState(habit?.title || '');
   const [editFreq, setEditFreq] = useState(habit?.targetDaysPerWeek || 7);
-  const [editRestFreq, setEditRestFreq] = useState(habit?.restFrequency || 0);
+  const [editWorkPeriod, setEditWorkPeriod] = useState(habit?.workPeriod || 0);
+  const [editRestPeriod, setEditRestPeriod] = useState(habit?.restPeriod || 0);
 
   if (!habit) return null;
 
@@ -35,7 +36,8 @@ export const HabitDetailModal = ({ habitId, onClose }: { habitId: string, onClos
     updateHabit(habit.id, { 
       title: editTitle, 
       targetDaysPerWeek: editFreq,
-      restFrequency: editRestFreq 
+      workPeriod: editWorkPeriod,
+      restPeriod: editRestPeriod
     });
     setMode('overview');
   };
@@ -178,16 +180,30 @@ export const HabitDetailModal = ({ habitId, onClose }: { habitId: string, onClos
                   <div className="flex flex-col gap-4 bg-white/50 dark:bg-black/40 border border-white/60 dark:border-white/10 rounded-2xl px-5 py-5">
                     <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-sm font-bold text-gray-900 dark:text-white block">Gym / Flexible Streak</span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Earn 1 rest day after X work days.</span>
+                          <span className="text-sm font-bold text-gray-900 dark:text-white block">Flexible Schedule</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Set Work/Rest day pattern.</span>
                         </div>
-                        <div className="text-indigo-500 font-black text-xl">{editRestFreq === 0 ? 'OFF' : editRestFreq}</div>
+                        <div className="text-indigo-500 font-black text-sm">{editWorkPeriod || 0}W / {editRestPeriod || 0}R</div>
                     </div>
-                    <input 
-                        type="range" min="0" max="7" 
-                        value={editRestFreq} onChange={(e) => setEditRestFreq(parseInt(e.target.value))}
-                        className="w-full accent-indigo-500"
-                    />
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 block">Work Days</label>
+                        <input 
+                            type="number" min="0" max="30" 
+                            value={editWorkPeriod} onChange={(e) => setEditWorkPeriod(parseInt(e.target.value) || 0)}
+                            className="w-full bg-white/50 dark:bg-black/20 border border-white/40 dark:border-white/10 rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 block">Rest Days</label>
+                        <input 
+                            type="number" min="0" max="30" 
+                            value={editRestPeriod} onChange={(e) => setEditRestPeriod(parseInt(e.target.value) || 0)}
+                            className="w-full bg-white/50 dark:bg-black/20 border border-white/40 dark:border-white/10 rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   <button 

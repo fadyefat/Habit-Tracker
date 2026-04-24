@@ -8,12 +8,13 @@ export const AddHabitModal = ({ onClose }: { onClose: () => void }) => {
   const [title, setTitle] = useState('');
   const [category] = useState('general');
   const [frequency, setFrequency] = useState(7);
-  const [restFrequency, setRestFrequency] = useState(0);
+  const [workPeriod, setWorkPeriod] = useState(0);
+  const [restPeriod, setRestPeriod] = useState(0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-    addHabit(title, category, frequency, restFrequency);
+    addHabit(title, category, frequency, workPeriod, restPeriod);
     onClose();
   };
 
@@ -70,20 +71,35 @@ export const AddHabitModal = ({ onClose }: { onClose: () => void }) => {
           <div className="flex flex-col gap-4 bg-white/50 dark:bg-black/40 border border-white/60 dark:border-white/10 rounded-2xl px-5 py-5">
              <div className="flex items-center justify-between">
                 <div>
-                   <span className="text-sm font-bold text-gray-900 dark:text-white block">Gym / Flexible Streak</span>
-                   <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Earn 1 rest day after X work days.</span>
+                   <span className="text-sm font-bold text-gray-900 dark:text-white block">Flexible Schedule</span>
+                   <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Set Work/Rest day pattern.</span>
                 </div>
-                <div className="text-indigo-500 font-black text-xl">{restFrequency === 0 ? 'OFF' : restFrequency}</div>
+                <div className="text-indigo-500 font-black text-sm">{workPeriod || 0}W / {restPeriod || 0}R</div>
              </div>
-             <input 
-                type="range" min="0" max="7" 
-                value={restFrequency} onChange={(e) => setRestFrequency(parseInt(e.target.value))}
-                className="w-full accent-indigo-500"
-             />
+             
+             <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 block">Work Days</label>
+                  <input 
+                      type="number" min="0" max="30" 
+                      value={workPeriod} onChange={(e) => setWorkPeriod(parseInt(e.target.value) || 0)}
+                      className="w-full bg-white/50 dark:bg-black/20 border border-white/40 dark:border-white/10 rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase mb-2 block">Rest Days</label>
+                  <input 
+                      type="number" min="0" max="30" 
+                      value={restPeriod} onChange={(e) => setRestPeriod(parseInt(e.target.value) || 0)}
+                      className="w-full bg-white/50 dark:bg-black/20 border border-white/40 dark:border-white/10 rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500 text-sm"
+                  />
+                </div>
+             </div>
+
              <p className="text-[10px] text-gray-400 font-semibold italic">
-                {restFrequency === 0 
-                  ? "No rest days allowed. Streak breaks if any day is missed." 
-                  : `You can skip 1 day after every ${restFrequency} days of work.`}
+                {workPeriod === 0 || restPeriod === 0 
+                  ? "Standard schedule. Habit appears every day." 
+                  : `Cycle: Work ${workPeriod} days, then Rest ${restPeriod} days.`}
              </p>
           </div>
 
