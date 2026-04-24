@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 
-type Theme = 'dark' | 'light';
+export type Theme = 'dark' | 'light' | 'auto';
 
 type ThemeProviderProps = {
   children: ReactNode;
@@ -16,7 +16,7 @@ type ThemeProviderState = {
 };
 
 const initialState: ThemeProviderState = {
-  theme: 'light',
+  theme: 'auto',
   isDark: false,
   setTheme: () => null,
 };
@@ -25,7 +25,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'light',
+  defaultTheme = 'auto',
   storageKey = 'habit-theme',
   ...props
 }: ThemeProviderProps) {
@@ -33,15 +33,38 @@ export function ThemeProvider({
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
 
+  const [isDarkResolved, setIsDarkResolved] = useState(false);
+
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light', 'dark');
-    root.classList.add(theme);
+
+    const updateTheme = () => {
+      let resolvedTheme: 'light' | 'dark';
+      
+      if (theme === 'auto') {
+        const hour = new Date().getHours();
+        resolvedTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+      } else {
+        resolvedTheme = theme as 'light' | 'dark';
+      }
+
+      root.classList.remove('light', 'dark');
+      root.classList.add(resolvedTheme);
+      setIsDarkResolved(resolvedTheme === 'dark');
+    };
+
+    updateTheme();
+
+    const interval = setInterval(() => {
+      if (theme === 'auto') updateTheme();
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, [theme]);
 
   const value = {
     theme,
-    isDark: theme === 'dark',
+    isDark: isDarkResolved,
     setTheme: (theme: Theme) => {
       localStorage.setItem(storageKey, theme);
       setTheme(theme);

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useHabits } from '../../hooks/useHabits';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Flame, Target, Activity, Trash2, Save } from 'lucide-react';
+import { X, Flame, Target, Activity, Trash2, Save, Plus } from 'lucide-react';
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const TrophyIcon = () => (
@@ -18,6 +18,7 @@ export const HabitDetailModal = ({ habitId, onClose }: { habitId: string, onClos
   const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'yearly'>('weekly');
   const [editTitle, setEditTitle] = useState(habit?.title || '');
   const [editFreq, setEditFreq] = useState(habit?.targetDaysPerWeek || 7);
+  const [editRestFreq, setEditRestFreq] = useState(habit?.restFrequency || 0);
 
   if (!habit) return null;
 
@@ -31,7 +32,11 @@ export const HabitDetailModal = ({ habitId, onClose }: { habitId: string, onClos
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editTitle.trim()) return;
-    updateHabit(habit.id, { title: editTitle, targetDaysPerWeek: editFreq });
+    updateHabit(habit.id, { 
+      title: editTitle, 
+      targetDaysPerWeek: editFreq,
+      restFrequency: editRestFreq 
+    });
     setMode('overview');
   };
 
@@ -168,6 +173,21 @@ export const HabitDetailModal = ({ habitId, onClose }: { habitId: string, onClos
                          {editFreq} {editFreq === 1 ? 'day' : 'days'}
                        </span>
                     </div>
+                  </div>
+
+                  <div className="flex flex-col gap-4 bg-white/50 dark:bg-black/40 border border-white/60 dark:border-white/10 rounded-2xl px-5 py-5">
+                    <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-sm font-bold text-gray-900 dark:text-white block">Gym / Flexible Streak</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Earn 1 rest day after X work days.</span>
+                        </div>
+                        <div className="text-indigo-500 font-black text-xl">{editRestFreq === 0 ? 'OFF' : editRestFreq}</div>
+                    </div>
+                    <input 
+                        type="range" min="0" max="7" 
+                        value={editRestFreq} onChange={(e) => setEditRestFreq(parseInt(e.target.value))}
+                        className="w-full accent-indigo-500"
+                    />
                   </div>
 
                   <button 

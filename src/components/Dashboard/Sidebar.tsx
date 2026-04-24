@@ -9,10 +9,14 @@ export const Sidebar = () => {
   const location = useLocation();
   const isDashboard = location.pathname === '/';
   const isTracker = location.pathname === '/tracker';
-  const { isDark, setTheme } = useTheme();
+  const { theme, setTheme, isDark } = useTheme();
   const mascot = useMascot();
 
-  const toggleTheme = () => setTheme(isDark ? 'light' : 'dark');
+  const toggleTheme = () => {
+    if (theme === 'light') setTheme('dark');
+    else if (theme === 'dark') setTheme('auto');
+    else setTheme('light');
+  };
   const { notify } = useNotifications();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, mode: 'light' | 'dark') => {
@@ -82,8 +86,15 @@ export const Sidebar = () => {
       <div className="flex flex-col gap-3 items-center w-full mt-auto">
         
         {/* Theme Toggle */}
-        <button onClick={toggleTheme} className={`${btnClass} ${inactiveClass}`}>
-          {isDark ? <Sun size={22} /> : <Moon size={22} />}
+        <button onClick={toggleTheme} className={`${btnClass} ${inactiveClass}`} title={`Current: ${theme}`}>
+          {theme === 'light' ? <Sun size={22} /> : theme === 'dark' ? <Moon size={22} /> : (
+            <div className="relative">
+              <RefreshCcw size={18} className="animate-spin-slow opacity-40" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-[8px] font-bold">A</span>
+              </div>
+            </div>
+          )}
         </button>
 
         {/* Divider */}

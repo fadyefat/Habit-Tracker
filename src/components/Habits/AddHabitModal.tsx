@@ -8,11 +8,12 @@ export const AddHabitModal = ({ onClose }: { onClose: () => void }) => {
   const [title, setTitle] = useState('');
   const [category] = useState('general');
   const [frequency, setFrequency] = useState(7);
+  const [restFrequency, setRestFrequency] = useState(0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-    addHabit(title, category, frequency);
+    addHabit(title, category, frequency, restFrequency);
     onClose();
   };
 
@@ -64,6 +65,26 @@ export const AddHabitModal = ({ onClose }: { onClose: () => void }) => {
                </span>
             </div>
             <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mt-2 ml-1">Days per week target.</p>
+          </div>
+
+          <div className="flex flex-col gap-4 bg-white/50 dark:bg-black/40 border border-white/60 dark:border-white/10 rounded-2xl px-5 py-5">
+             <div className="flex items-center justify-between">
+                <div>
+                   <span className="text-sm font-bold text-gray-900 dark:text-white block">Gym / Flexible Streak</span>
+                   <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Earn 1 rest day after X work days.</span>
+                </div>
+                <div className="text-indigo-500 font-black text-xl">{restFrequency === 0 ? 'OFF' : restFrequency}</div>
+             </div>
+             <input 
+                type="range" min="0" max="7" 
+                value={restFrequency} onChange={(e) => setRestFrequency(parseInt(e.target.value))}
+                className="w-full accent-indigo-500"
+             />
+             <p className="text-[10px] text-gray-400 font-semibold italic">
+                {restFrequency === 0 
+                  ? "No rest days allowed. Streak breaks if any day is missed." 
+                  : `You can skip 1 day after every ${restFrequency} days of work.`}
+             </p>
           </div>
 
           <button 

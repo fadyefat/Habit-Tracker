@@ -52,4 +52,13 @@
   .glass-pill {
     @apply bg-white/20 dark:bg-white/5 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-full flex items-center shadow-sm;
   }
+
+  .animate-spin-slow {
+    animation: spin 6s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
 }
